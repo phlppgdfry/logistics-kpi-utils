@@ -67,3 +67,7 @@ See [CHANGELOG.md](CHANGELOG.md). MIT licensed. Synthetic examples are illustrat
 Use this classification to select completed arrivals before calculating `onTimeRate`. This keeps future-dated actual records out of an as-of dashboard's punctuality denominator. No business holiday calendar, prediction or working-hours assumption is applied.
 
 TypeScript declarations are compiled in CI with positive examples and expected type errors. [Synthetic fixture and expected values](examples/scenario.json) support independent reproduction.
+
+## Used in a working application
+
+[Shipment Desk](https://github.com/phlppgdfry/shipment-tracking-platform/blob/master/docs/DEMO.md) consumes the released 0.2.0 artifact. Its [mapping module](https://github.com/phlppgdfry/shipment-tracking-platform/blob/master/src/WebAPI/wwwroot/metrics.js) translates versioned API evidence into arrival/visit inputs, applies an explicit clock and shows denominators, future-actual exclusions and conflicting-plan warnings. [Real desktop/mobile verification](https://github.com/phlppgdfry/shipment-tracking-platform/blob/master/docs/VERIFICATION.md) and a recorded scenario demonstrate actual use rather than a library-only example.
