@@ -15,3 +15,12 @@ export function dwellHours(gateIn: Timestamp, gateOut: Timestamp): number;
 export function delayMinutes(planned: Timestamp, actual: Timestamp): number;
 export function onTimeRate(arrivals: Arrival[], options?: { toleranceMinutes?: number }): OnTimeSummary;
 export function summarizeDwell(visits: Visit[]): DwellSummary;
+
+export type ArrivalState = 'completed' | 'pending' | 'overdue' | 'unscheduled';
+export interface ArrivalStatusSummary {
+  total: number; asOf: string; completed: number; pending: number; overdue: number; unscheduled: number;
+  /** Subset of non-completed rows with a provided actual timestamp after asOf. */
+  futureActualExcluded: number;
+  states: { id: string; status: ArrivalState; futureActual: boolean }[];
+}
+export function summarizeArrivalStatus(arrivals: Arrival[], options: { asOf: Timestamp; toleranceMinutes?: number }): ArrivalStatusSummary;

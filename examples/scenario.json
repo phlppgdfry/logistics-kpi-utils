@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "synthetic": true,
+  "asOf": "2026-10-12T12:00:00Z",
+  "toleranceMinutes": 5,
+  "arrivals": [
+    {
+      "id": "late-completed",
+      "planned": "2026-10-12T08:00:00Z",
+      "actual": "2026-10-12T08:20:00Z"
+    },
+    {
+      "id": "on-time",
+      "planned": "2026-10-12T05:00:00Z",
+      "actual": "2026-10-12T05:04:00Z"
+    },
+    {
+      "id": "overdue",
+      "planned": "2026-10-12T10:00:00Z",
+      "actual": null
+    }
+  ],
+  "visits": [
+    {
+      "id": "visit-2",
+      "gateIn": "2026-10-12T05:04:00Z",
+      "gateOut": "2026-10-12T08:04:00Z"
+    }
+  ],
+  "expected": {
+    "completed": 2,
+    "overdue": 1,
+    "onTimeRate": 0.5,
+    "meanDwellHours": 3
+  }
+}

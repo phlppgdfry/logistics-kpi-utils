@@ -14,13 +14,17 @@ jobs:
           node-version: '22'
       - run: npm ci
       - run: npm test
+      - run: npm run test:types
       - run: npm run example
       - name: Test installable artifact
         run: |
           PACKAGE_FILE=$(node --input-type=module -e "import fs from 'node:fs'; console.log('phlppgdfry-logistics-kpi-utils-'+JSON.parse(fs.readFileSync('package.json')).version+'.tgz')")
+          SOURCE_DIR="$PWD"
           npm pack --pack-destination "$RUNNER_TEMP"
           mkdir "$RUNNER_TEMP/consumer"
           cd "$RUNNER_TEMP/consumer"
           npm init -y
           npm install "$RUNNER_TEMP/$PACKAGE_FILE" --ignore-scripts
           node --input-type=module -e "import {dwellHours} from '@phlppgdfry/logistics-kpi-utils'; if(dwellHours('2026-10-12T08:00:00Z','2026-10-12T09:00:00Z') !== 1) process.exit(1)"
+          sed "s|../src/index.js|@phlppgdfry/logistics-kpi-utils|" "$SOURCE_DIR/test/types.ts" > types.ts
+          node "$SOURCE_DIR/node_modules/typescript/bin/tsc" --noEmit --strict --module NodeNext --moduleResolution NodeNext types.ts

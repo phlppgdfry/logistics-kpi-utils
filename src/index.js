@@ -83,3 +83,24 @@ export function summarizeDwell(visits) {
     medianHours: percentile(0.5), p95Hours: percentile(0.95),
     minHours: values[0] ?? null, maxHours: values.at(-1) ?? null };
 }
+
+/** Classify arrivals at an explicit as-of instant. Future actual times are not completed evidence. */
+export function summarizeArrivalStatus(arrivals, { asOf, toleranceMinutes = 0 } = {}) {
+  records(arrivals);
+  const cutoff = timestamp(asOf, 'asOf');
+  if (!Number.isFinite(toleranceMinutes) || toleranceMinutes < 0)
+    throw new RangeError('toleranceMinutes must be finite and non-negative');
+  const counts = { completed: 0, pending: 0, overdue: 0, unscheduled: 0, futureActualExcluded: 0 };
+  const states = arrivals.map(row => {
+    const planned = missing(row.planned) ? null : timestamp(row.planned, 'planned');
+    const actual = missing(row.actual) ? null : timestamp(row.actual, 'actual');
+    const futureActual = actual !== null && actual > cutoff;
+    if (futureActual) counts.futureActualExcluded++;
+    const status = actual !== null && actual <= cutoff ? 'completed'
+      : planned === null ? 'unscheduled'
+      : cutoff > planned + toleranceMinutes * 60_000 ? 'overdue' : 'pending';
+    counts[status]++;
+    return { id: row.id, status, futureActual };
+  });
+  return { total: arrivals.length, asOf: new Date(cutoff).toISOString(), ...counts, states };
+}

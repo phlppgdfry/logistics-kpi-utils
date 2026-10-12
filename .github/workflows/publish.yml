@@ -23,6 +23,7 @@ jobs:
         run: node --input-type=module -e "import fs from 'node:fs'; if(process.env.RELEASE_TAG !== 'v'+JSON.parse(fs.readFileSync('package.json')).version) process.exit(1)"
       - run: npm ci
       - run: npm test
+      - run: npm run test:types
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

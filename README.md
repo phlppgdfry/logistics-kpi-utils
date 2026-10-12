@@ -2,20 +2,20 @@
 
 [![Tests](https://github.com/phlppgdfry/logistics-kpi-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/phlppgdfry/logistics-kpi-utils/actions/workflows/ci.yml)
 
-Small, dependency-free JavaScript library with TypeScript declarations for logistics and terminal dashboards. **Preview v0.1.0 · Node.js 22+ · ESM.** No network calls, storage, cloud account or customer data.
+Small, dependency-free JavaScript library with TypeScript declarations for logistics and terminal dashboards. **Preview v0.2.0 · Node.js 22+ · ESM.** No network calls, storage, cloud account or customer data.
 
 ## Install
 
 Published to **GitHub Packages**, not npmjs.org. Configure the `@phlppgdfry` scope to `https://npm.pkg.github.com` and authenticate locally with a personal access token (classic) carrying `read:packages`. GitHub's npm registry requires authentication even for public packages. Keep credentials out of committed `.npmrc` files. Actions can use `GITHUB_TOKEN` with package access.
 
 ```bash
-npm install @phlppgdfry/logistics-kpi-utils@0.1.0 --registry=https://npm.pkg.github.com
+npm install @phlppgdfry/logistics-kpi-utils@0.2.0 --registry=https://npm.pkg.github.com
 ```
 
 Alternatively download the `.tgz` from the GitHub release and install it locally without registry authentication:
 
 ```bash
-npm install ./phlppgdfry-logistics-kpi-utils-0.1.0.tgz
+npm install ./phlppgdfry-logistics-kpi-utils-0.2.0.tgz
 ```
 
 ## Example
@@ -38,6 +38,7 @@ onTimeRate([
 | `dwellHours(gateIn, gateOut)` | Elapsed hours; gate-out minus gate-in | Invalid timestamps and negative dwell throw |
 | `delayMinutes(planned, actual)` | Signed minutes; negative is early | Invalid timestamps throw |
 | `onTimeRate(arrivals, options)` | Arrivals at or before planned + tolerance / evaluable arrivals | Missing timestamps excluded and counted; no denominator gives `null` |
+| `summarizeArrivalStatus(arrivals, { asOf, toleranceMinutes })` | Completed, pending, overdue and unscheduled counts at an explicit instant | Invalid values throw; future actual times are excluded from completion and reported |
 | `summarizeDwell(visits)` | Completed visit mean, median, p95, min and max, in hours | Open/missing visits excluded and counted; empty statistics give `null` |
 
 The on-time rate is a fraction from 0 to 1, not a percentage. It describes completed, evaluable arrivals; overdue arrivals without actual times are **not** counted as on time or late. Track pending and overdue calls separately before drawing operational conclusions. Dwell statistics describe completed visits and can underrepresent long-running open visits.
@@ -58,3 +59,11 @@ npm pack
 Tests cover offsets, daylight saving, negative dwell, early arrival, tolerance boundaries, missing data, denominators, malformed dates, duplicate IDs and percentile calculations. CI also installs the packed artifact into a clean temporary consumer and tests its published exports. GitHub releases trigger publication only after tests pass and the release tag matches `package.json`.
 
 See [CHANGELOG.md](CHANGELOG.md). MIT licensed. Synthetic examples are illustrations, not claims about an actual terminal's performance.
+
+## Arrival classification at a scenario clock
+
+`summarizeArrivalStatus` requires `asOf`; it never reads the current system clock. A recorded actual arrival at or before `asOf` is completed. Otherwise a missing plan is unscheduled, a plan whose deadline (including tolerance) has passed is overdue, and a remaining plan is pending. At the exact deadline the arrival is still pending. Future actual timestamps are flagged and never treated as completed. The four status counts sum to `total`; `futureActualExcluded` is an additional anomaly count, not a fifth status.
+
+Use this classification to select completed arrivals before calculating `onTimeRate`. This keeps future-dated actual records out of an as-of dashboard's punctuality denominator. No business holiday calendar, prediction or working-hours assumption is applied.
+
+TypeScript declarations are compiled in CI with positive examples and expected type errors. [Synthetic fixture and expected values](examples/scenario.json) support independent reproduction.

@@ -1,6 +1,6 @@
 {
   "name": "@phlppgdfry/logistics-kpi-utils",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Dependency-free logistics KPIs with explicit timezone, missing-data and denominator rules.",
   "license": "MIT",
   "author": "Philippe Godfroy",
@@ -17,12 +17,14 @@
     "src",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "examples"
   ],
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/*.test.js",
     "example": "node examples/terminal-kpis.mjs",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test && npm run test:types",
+    "test:types": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext test/types.ts"
   },
   "engines": {
     "node": ">=22"
@@ -44,5 +46,8 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }

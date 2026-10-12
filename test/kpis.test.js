@@ -64,3 +64,48 @@ test('single completed visit has identical percentiles', () => {
 test('elapsed dwell crosses daylight saving using offsets', () => {
   assert.equal(dwellHours('2026-10-25T01:30:00+02:00','2026-10-25T03:30:00+01:00'),3);
 });
+
+import { summarizeArrivalStatus } from '../src/index.js';
+test('arrival status partitions completed, pending, overdue and unscheduled at an explicit clock', () => {
+  const summary = summarizeArrivalStatus([
+    {id:'done',planned:at,actual:'2026-10-12T08:20:00Z'},
+    {id:'late',planned:'2026-10-12T10:00:00Z',actual:null},
+    {id:'future',planned:'2026-10-12T13:00:00Z'},
+    {id:'unknown'},
+  ],{asOf:'2026-10-12T12:00:00Z'});
+  assert.deepEqual([summary.completed,summary.overdue,summary.pending,summary.unscheduled],[1,1,1,1]);
+  assert.equal(summary.completed+summary.overdue+summary.pending+summary.unscheduled,summary.total);
+});
+test('deadline tolerance is inclusive and only becomes overdue after the deadline', () => {
+  assert.equal(summarizeArrivalStatus([{id:'1',planned:at}],{asOf:'2026-10-12T08:05:00Z',toleranceMinutes:5}).pending,1);
+  assert.equal(summarizeArrivalStatus([{id:'1',planned:at}],{asOf:'2026-10-12T08:05:01Z',toleranceMinutes:5}).overdue,1);
+});
+test('future actual values do not hide overdue arrivals', () => {
+  const result=summarizeArrivalStatus([{id:'1',planned:at,actual:'2026-10-12T13:00:00Z'}],{asOf:'2026-10-12T12:00:00Z'});
+  assert.equal(result.completed,0);assert.equal(result.overdue,1);assert.equal(result.futureActualExcluded,1);
+});
+test('completed unscheduled arrival is completed without inventing a plan', () => {
+  const result=summarizeArrivalStatus([{id:'1',actual:at}],{asOf:at});
+  assert.equal(result.completed,1);assert.equal(result.unscheduled,0);
+});
+test('arrival classification requires explicit valid asOf and rejects malformed provided data', () => {
+  assert.throws(()=>summarizeArrivalStatus([]));
+  assert.throws(()=>summarizeArrivalStatus([],{asOf:'2026-10-12T12:00:00'}));
+  assert.throws(()=>summarizeArrivalStatus([{id:'1',actual:'bad'}],{asOf:at}));
+  assert.throws(()=>summarizeArrivalStatus([],{asOf:at,toleranceMinutes:-1}));
+});
+test('classification does not mutate input and retains duplicate protection',()=>{
+  const rows=[{id:'1',planned:at}];const before=JSON.stringify(rows);
+  summarizeArrivalStatus(rows,{asOf:at});assert.equal(JSON.stringify(rows),before);
+  assert.throws(()=>summarizeArrivalStatus([rows[0],rows[0]],{asOf:at}),/duplicate/);
+});
+
+import fs from 'node:fs';
+test('documented synthetic scenario reproduces its independently stated expected metrics',()=>{
+  const fixture=JSON.parse(fs.readFileSync(new URL('../examples/scenario.json',import.meta.url)));
+  const statuses=summarizeArrivalStatus(fixture.arrivals,{asOf:fixture.asOf,toleranceMinutes:fixture.toleranceMinutes});
+  assert.equal(statuses.completed,fixture.expected.completed);
+  assert.equal(statuses.overdue,fixture.expected.overdue);
+  assert.equal(onTimeRate(fixture.arrivals,{toleranceMinutes:fixture.toleranceMinutes}).rate,fixture.expected.onTimeRate);
+  assert.equal(summarizeDwell(fixture.visits).meanHours,fixture.expected.meanDwellHours);
+});
