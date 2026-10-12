@@ -1,0 +1,48 @@
+{
+  "name": "@phlppgdfry/logistics-kpi-utils",
+  "version": "0.1.0",
+  "description": "Dependency-free logistics KPIs with explicit timezone, missing-data and denominator rules.",
+  "license": "MIT",
+  "author": "Philippe Godfroy",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "example": "node examples/terminal-kpis.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "logistics",
+    "terminal",
+    "kpi",
+    "dwell-time",
+    "analytics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phlppgdfry/logistics-kpi-utils.git"
+  },
+  "homepage": "https://github.com/phlppgdfry/logistics-kpi-utils#readme",
+  "bugs": {
+    "url": "https://github.com/phlppgdfry/logistics-kpi-utils/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

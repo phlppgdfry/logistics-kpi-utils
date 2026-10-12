@@ -1,0 +1,25 @@
+name: Test and package
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm test
+      - run: npm run example
+      - name: Test installable artifact
+        run: |
+          npm pack --pack-destination "$RUNNER_TEMP"
+          mkdir "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y
+          npm install "$RUNNER_TEMP/phlppgdfry-logistics-kpi-utils-0.1.0.tgz" --ignore-scripts
+          node --input-type=module -e "import {dwellHours} from '@phlppgdfry/logistics-kpi-utils'; if(dwellHours('2026-10-12T08:00:00Z','2026-10-12T09:00:00Z') !== 1) process.exit(1)"
