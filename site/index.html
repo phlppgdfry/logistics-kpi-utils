@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Logistics KPI Utils — terminal KPIs that refuse to lie about missing data</title>
+<meta name="description" content="A dependency-free JavaScript library for dwell time, punctuality and arrival status, with explicit timezone, denominator and missing-data rules. Try it live in the browser.">
+<link rel="canonical" href="https://phlppgdfry.github.io/logistics-kpi-utils/">
+<meta property="og:type" content="website"><meta property="og:title" content="Logistics KPI Utils — terminal KPIs that refuse to lie about missing data"><meta property="og:description" content="A dependency-free JavaScript library for dwell time, punctuality and arrival status, with explicit timezone, denominator and missing-data rules. Try it live in the browser.">
+<meta property="og:url" content="https://phlppgdfry.github.io/logistics-kpi-utils/"><meta property="og:image" content="https://phlppgdfry.github.io/logistics-kpi-utils/og.jpg"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0d12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2338bdf8'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/showcase.css">
+<style>:root{--brand:#38bdf8;--accent-ink:#04121b}
+.kpi-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:20px}
+.kpi-grid>*{min-width:0}
+@media (max-width:900px){.kpi-grid{grid-template-columns:1fr}}
+.kpi-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:520px){.kpi-tiles{grid-template-columns:repeat(2,1fr)}}
+.kpi-tile{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi-tile .v{font:700 22px/1.1 var(--mono);color:var(--fg)}
+.kpi-tile .l{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.3}
+.kpi-tile.big{grid-column:span 2;background:color-mix(in srgb,var(--accent) 12%,var(--bg2));border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.kpi-tile.big .v{font-size:34px;color:var(--accent)}
+.kpi-tile.warn .v{color:var(--warn)}
+.kpi-tl{margin-top:14px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.kpi-tl{overflow-x:auto}.kpi-tl svg{width:100%;min-width:540px;height:auto;display:block}
+.kpi-tl .g{stroke:var(--line);stroke-width:1}
+.kpi-tl .t,.kpi-tl .id{font:11px var(--mono);fill:var(--dim)}
+.kpi-tl .id{fill:var(--muted)}
+.kpi-tl .z{fill:color-mix(in srgb,var(--accent) 22%,transparent)}
+.kpi-tl .p{fill:var(--bg2);stroke:var(--muted);stroke-width:2}
+.kpi-tl .a.ok{fill:var(--ok)} .kpi-tl .a.late{fill:var(--bad)} .kpi-tl .a.fut{opacity:.35}
+.kpi-tl .lnk{stroke:var(--line2);stroke-width:2;stroke-dasharray:3 3}
+.kpi-tl .now{stroke:var(--warn);stroke-width:1.5;stroke-dasharray:4 3} .kpi-tl .nowt{font:600 10px var(--mono);fill:var(--warn)}
+.kpi-key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 10px;vertical-align:-1px}
+.kpi-key i.p{border:2px solid var(--muted)} .kpi-key i.a.ok{background:var(--ok)} .kpi-key i.a.late{background:var(--bad)} .kpi-key i.z{border-radius:2px;background:color-mix(in srgb,var(--accent) 35%,transparent)}
+.kpi-raw{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;max-height:220px;overflow:auto;margin:0;color:var(--muted)}
+.kpi-err{background:color-mix(in srgb,var(--bad) 12%,var(--bg2));border:1px solid color-mix(in srgb,var(--bad) 45%,var(--line));color:var(--fg);border-radius:10px;padding:14px;margin-bottom:12px;font-family:var(--mono);font-size:13px}
+.kpi-err b{color:var(--bad)}
+#out{transition:opacity .2s}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">
+  <a class="brand" href="#"><i class="dot"></i><span>Logistics KPI Utils</span></a>
+  <nav><a class="" href="#demo">Try it</a><a class="" href="#how">How it works</a><a class="hide-sm" href="#run">Run it</a><a href="https://github.com/phlppgdfry/logistics-kpi-utils" aria-label="GitHub repository">GitHub</a><button class="theme" type="button" aria-label="Toggle light or dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></nav>
+</div></div>
+<main>
+<header class="hero"><div class="wrap grid">
+  <div>
+    <div class="kicker"><span>JavaScript library · v0.2.0</span><span class="chip status live">Released</span></div>
+    <h1>Terminal KPIs that <em>show their denominator</em>.</h1>
+    <p class="lede">On-time rate, dwell time and arrival status for logistics dashboards, in about 100 lines of dependency-free JavaScript. Missing timestamps are counted and excluded, never silently treated as on time. Bad input throws instead of producing a confident wrong number.</p>
+    <div class="ctas"><a class="btn primary" href="#demo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Try the demo</a><a class="btn" href="https://github.com/phlppgdfry/logistics-kpi-utils"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg> Source on GitHub</a></div>
+    <div class="stack"><span class="chip">JavaScript (ESM)</span><span class="chip">TypeScript types</span><span class="chip">Node 22</span><span class="chip">node:test</span><span class="chip">GitHub Packages</span></div>
+  </div>
+  <div class="hero-visual"><div class="frame"><div class="bar"><i></i><i></i><i></i><b>example.mjs</b></div><div class="code" style="border:0;border-radius:0"><button class="copy" type="button">Copy</button><pre><code>import { onTimeRate }
+  from &#x27;@phlppgdfry/logistics-kpi-utils&#x27;;
+
+onTimeRate([
+  { id: &#x27;call-1&#x27;, planned: &#x27;2026-10-12T08:00:00Z&#x27;,
+                  actual:  &#x27;2026-10-12T08:04:00Z&#x27; },
+  { id: &#x27;call-2&#x27;, planned: &#x27;2026-10-12T09:00:00Z&#x27;,
+                  actual:  null },
+], { toleranceMinutes: 5 });
+
+<span class="c">// → { total: 2, evaluated: 1, excluded: 1,</span>
+<span class="c">//     onTime: 1, late: 0, rate: 1 }</span>
+<span class="c">// call-2 has no actual time: excluded and counted,</span>
+<span class="c">// not quietly scored as on time.</span></code></pre></div></div></div>
+</div></header>
+<section id="why"><div class="wrap">
+  <p class="eyebrow">Why it exists</p><h2>A 96% on-time rate means nothing if you don't know what was left out.</h2>
+  <div class="problem">
+    <div class="card before"><div class="label">Without it</div><p>Dashboards divide by whatever rows happen to be there. A truck that never arrived drops out of the maths, timestamps without a timezone shift by an hour, and the same visit counted twice inflates the average. The number looks precise and is wrong.</p></div>
+    <div class="card after"><div class="label">With it</div><p>Every function returns its denominator: how many records were evaluated, how many were excluded and why. Timezone-less strings, impossible dates, negative dwell and duplicate IDs are rejected. Status is computed against an explicit scenario clock, never the system time.</p></div>
+  </div>
+</div></section>
+<section id="demo"><div class="wrap">
+  <p class="eyebrow">Try it · runs in your browser</p><h2>Change the data, watch the KPIs and the timeline react</h2>
+  <p class="sub">This playground imports the library's own <code>src/index.js</code>, copied unchanged. Pick a preset or edit the JSON. Try deleting an <code>actual</code>, moving the clock, or loading one of the bad-data presets.</p>
+  <div class="demo"><div class="tabs" role="tablist" id="presets"></div>
+<div class="kpi-grid">
+  <div>
+    <label for="input">Arrivals and gate visits (JSON). Edit anything.</label>
+    <textarea id="input" spellcheck="false" style="min-height:340px"></textarea>
+    <div class="row" style="margin-top:12px">
+      <div><label for="asof">Scenario clock (<code>asOf</code>)</label><input id="asof"></div>
+      <div><label for="tol">Tolerance: <b id="tolv">5</b> min</label><input id="tol" type="range" min="0" max="60" step="1" value="5"></div>
+    </div>
+  </div>
+  <div>
+    <div id="err" class="kpi-err" hidden></div>
+    <div id="out">
+      <div class="kpi-tiles" id="tiles"></div>
+      <div class="kpi-tl"><div class="small dim" style="margin-bottom:6px">Arrivals on the scenario clock · <span class="kpi-key"><i class="p"></i>planned <i class="a ok"></i>on time <i class="a late"></i>late <i class="z"></i>tolerance</span></div><svg id="tl" role="img" aria-label="Arrival timeline"></svg></div>
+      <div class="small dim" style="margin:14px 0 6px">Raw return values from the library</div>
+      <pre class="kpi-raw" id="raw"></pre>
+    </div>
+  </div>
+</div>
+</div>
+  <p class="note">All data is synthetic. The on-time rate here is calculated over arrivals that are completed at the scenario clock, as the README recommends.</p>
+</div></section>
+<section id="how"><div class="wrap">
+  <p class="eyebrow">How it works</p><h2>Five functions, each with a written rule for edge cases</h2>
+  
+  <div class="cards"><div class="card"><div class="ic">01</div><h3>dwellHours / delayMinutes</h3><p>Elapsed hours and signed minutes in UTC milliseconds, so DST and offsets are handled. Negative dwell throws.</p></div><div class="card"><div class="ic">02</div><h3>onTimeRate</h3><p>Arrivals at or before planned + tolerance, divided by evaluable arrivals only. No denominator gives <code>null</code>, not 0% or 100%.</p></div><div class="card"><div class="ic">03</div><h3>summarizeArrivalStatus</h3><p>Completed, pending, overdue or unscheduled at an explicit <code>asOf</code>. Future actual timestamps are flagged and never counted as done.</p></div><div class="card"><div class="ic">04</div><h3>summarizeDwell</h3><p>Mean, median, p95, min and max over closed visits. Percentiles use linear interpolation (R-7), documented and tested.</p></div></div>
+  <h3 style="margin:34px 0 14px">How one record is judged</h3><div class="flow" role="list"><div class="node"><div class="n">01</div><b>Validate</b><small>unique non-empty id, ISO time with explicit offset</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node hl"><div class="n">02</div><b>Classify</b><small>against the scenario clock: completed, pending, overdue, unscheduled</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">03</div><b>Exclude &amp; count</b><small>missing values leave the denominator but stay visible</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">04</div><b>Aggregate</b><small>rate or statistics over evaluable records only</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">05</div><b>Return evidence</b><small>result plus total, evaluated and excluded</small></div></div>
+</div></section>
+<section id="evidence"><div class="wrap">
+  <p class="eyebrow">Evidence</p><h2>What is real, and what is not</h2>
+  
+  <div class="metrics"><div class="metric"><div class="v">0</div><div class="l">runtime dependencies</div><div class="s">about 100 lines of ESM</div></div><div class="metric"><div class="v">5</div><div class="l">documented functions</div><div class="s">with TypeScript declarations compiled in CI</div></div><div class="metric"><div class="v">1</div><div class="l">real consumer</div><div class="s">Shipment Desk uses the released 0.2.0 artifact</div></div></div>
+  <div class="honest" style="margin-top:18px">
+      <div class="card real"><h3><span class="pill ok">REAL</span> Built and verified</h3><ul><li>Released as v0.2.0 on GitHub Packages, plus a downloadable tarball</li><li>Tests cover offsets, DST, tolerance boundaries, duplicates, malformed dates and percentiles</li><li>CI installs the packed artifact into a clean consumer before release</li><li>Used by the Shipment Desk demo in shipment-tracking-platform</li></ul></div>
+      <div class="card sim"><h3><span class="pill warn">SIMULATED</span> Mocked or not built yet</h3><ul><li>All example data is synthetic; no real terminal performance is claimed</li><li>No holiday calendar, working hours or predictions are applied</li><li>Not published on npmjs.org: GitHub Packages requires a token, so the tarball is the easy route</li></ul></div></div>
+</div></section>
+<section id="run"><div class="wrap two">
+  <div><p class="eyebrow">Run it yourself</p><h2>Run it locally</h2>
+  
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code><span class="c"># Without registry credentials: use the release tarball</span>
+curl -LO https://github.com/phlppgdfry/logistics-kpi-utils/releases/download/v0.2.0/phlppgdfry-logistics-kpi-utils-0.2.0.tgz
+npm install ./phlppgdfry-logistics-kpi-utils-0.2.0.tgz
+
+<span class="c"># Or work on the library itself</span>
+git clone https://github.com/phlppgdfry/logistics-kpi-utils
+cd logistics-kpi-utils &amp;&amp; npm ci
+npm test          # node:test suite
+npm run example   # prints the synthetic KPIs</code></pre></div></div>
+  <div><p class="eyebrow">Go deeper</p><h2>Read the source</h2>
+  <div class="links"><a href="https://github.com/phlppgdfry/logistics-kpi-utils"><span>Repository</span><span>github</span></a><a href="https://github.com/phlppgdfry/logistics-kpi-utils/blob/HEAD/README.md#metric-definitions"><span>Metric definitions</span><span>README</span></a><a href="https://github.com/phlppgdfry/logistics-kpi-utils/blob/HEAD/examples/scenario.json"><span>Synthetic scenario with expected values</span><span>json</span></a><a href="https://github.com/phlppgdfry/logistics-kpi-utils/blob/HEAD/CHANGELOG.md"><span>Changelog</span><span>md</span></a><a href="https://github.com/phlppgdfry/logistics-kpi-utils/releases/tag/v0.2.0"><span>Release v0.2.0</span><span>release</span></a><a href="https://phlppgdfry.github.io/shipment-tracking-platform/"><span>Shipment Desk, a real consumer</span><span>demo</span></a></div></div>
+</div></section></main>
+<footer><div class="wrap">
+  <span>Logistics KPI Utils · A portfolio project by Philippe Godfroy</span>
+  <span><a href="https://www.philippegodfroy.com/work">More projects</a> · <a href="https://github.com/phlppgdfry/logistics-kpi-utils">Source</a></span>
+</div></footer>
+<script src="assets/showcase.js"></script>
+<script src="assets/demo.js" type="module"></script>
+</body></html>

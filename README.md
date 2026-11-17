@@ -2,6 +2,12 @@
 
 [![Tests](https://github.com/phlppgdfry/logistics-kpi-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/phlppgdfry/logistics-kpi-utils/actions/workflows/ci.yml)
 
+<!-- showcase:start -->
+> **[▶ Live playground](https://phlppgdfry.github.io/logistics-kpi-utils/)** — edit synthetic arrivals in your browser and watch the KPIs, denominators and timeline react. It runs this library's own source.
+
+[![Live playground: logistics-kpi-utils](site/demo.png)](https://phlppgdfry.github.io/logistics-kpi-utils/)
+<!-- showcase:end -->
+
 Small, dependency-free JavaScript library with TypeScript declarations for logistics and terminal dashboards. **Preview v0.2.0 · Node.js 22+ · ESM.** No network calls, storage, cloud account or customer data.
 
 ## Start here
