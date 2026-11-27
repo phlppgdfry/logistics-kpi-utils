@@ -1,3 +1,4 @@
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 // Playground: imports the library file itself (copied unchanged from src/index.js at build time).
 import { onTimeRate, summarizeDwell, summarizeArrivalStatus, delayMinutes } from './kpi.js';
 
@@ -114,7 +115,7 @@ function run() {
     err.hidden = true; out.style.opacity = 1;
   } catch (e) {
     err.hidden = false; out.style.opacity = .35;
-    err.innerHTML = `<b>${e.name}</b> ${e.message.replace(/</g, '&lt;')}<div class="small" style="margin-top:6px;opacity:.8">The library refuses this input instead of returning a misleading number.</div>`;
+    err.innerHTML = `<b>${esc(e.name)}</b> ${esc(e.message)}<div class="small" style="margin-top:6px;opacity:.8">The library refuses this input instead of returning a misleading number.</div>`;
   }
 }
 
